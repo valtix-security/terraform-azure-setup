@@ -3,6 +3,7 @@ Create Azure AD App that is used by the Valtix Controller to manage your Azure S
 
 # Requirements
 1. Enable terraform to access your Azure account. Check here for the options https://registry.terraform.io/providers/hashicorp/azuread/latest/docs and https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
+1. Set the default subscription to work on
 1. Login to the Valtix Dashboard and generate an API Key using the instructions provided here: https://registry.terraform.io/providers/valtix-security/valtix/latest/docs
 
 ## Argument Reference
@@ -18,23 +19,39 @@ Create Azure AD App that is used by the Valtix Controller to manage your Azure S
 * `subscription_id` - Azure Subscription Id
 * `iam_role` - Custom IAM Role name assigned to the application created
 
-## Using as a module
+## Running as root module
+```
+git clone https://github.com/valtix-security/terraform-azure-setup.git
+cd terraform-azure-setup
+mv provider provider.tf
+cp values.sample values
+```
 
-To use this repo as a terraform module, remove provider.tf file or comment out the content in that file. From a top level module, call this repo as a module
-
-### Top level module (In directory at the same level as this repo)
+Edit `values` file with the appropriate values for the variables
 
 ```
+terraform init
+terraform apply -var-file values
+```
+
+## Using as a module (non-root module)
+*To onboard the subscription onto the Valtix Controller, uncomment the valtix sections in the following example and change the other values appropriately*
+
+Create a tf file with the following content
+
+```hcl
 terraform {
   required_providers {
     azuread = {
       source  = "hashicorp/azuread"
       version = "~>1.6.0"
-      # using older version as we saw some issues creating the application with 2.x msgraph api, it was probably temporary
     }
     azurerm = {
       source = "hashicorp/azurerm"
     }
+    # valtix = {
+    #   source = "valtix-security/valtix"
+    # }
   }
 }
 
@@ -45,12 +62,26 @@ provider "azurerm" {
   features {}
 }
 
-provider "valtix" {
-  api_key_file = file(var.valtix_api_key_file)
-}
-
 module "csp_setup" {
-  source = "../terraform-azure-setup"
+  source = "github.com/valtix-security/terraform-azure-setup"
+  # define the values for all the variables (use values-sample as a reference)
   prefix = "valtix"
 }
+
+# provider "valtix" {
+#   api_key_file = file("~/valtix-controller-api-key.json")
+# }
+
+# resource "valtix_cloud_account" "azure1" {
+#   name                  = "azure-sub1"
+#   csp_type              = "AZURE"
+#   azure_directory_id    = module.csp_setup.tenant_id
+#   azure_subscription_id = module.csp_setup.subscription_id
+#   azure_application_id  = module.csp_setup.app_id
+#   azure_client_secret   = module.csp_setup.secret_key
+#   inventory_monitoring {
+#     regions = ["us-east1", "us-west1"]
+#   }
+# }
+
 ```
