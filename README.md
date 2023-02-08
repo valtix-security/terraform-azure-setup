@@ -9,6 +9,7 @@ Create Azure AD App that is used by the Valtix Controller to manage your Azure S
 ## Argument Reference
 
 * `prefix` - (Required) App, Custom role are created with this prefix
+* `subscription_guids_list` - List of subscriptions (Ids) to which IAM role is assigned and prepared to be onboarded onto the Valtix Controller. Default is to use the current active subscription on the current login
 
 ## Outputs
 
@@ -16,7 +17,7 @@ Create Azure AD App that is used by the Valtix Controller to manage your Azure S
 * `app_id` - AD App Registration Id
 * `app_name` - AD App Registration Name
 * `secret_key` - Secret key for the above app (Sensitive, use `terraform output -json | jq -r .secret_key.value` to see this value)
-* `subscription_id` - Azure Subscription Id
+* `subscription_ids` - List of Azure Subscription Ids
 * `iam_role` - Custom IAM Role name assigned to the application created
 
 ## Running as root module
@@ -63,20 +64,21 @@ provider "azurerm" {
 }
 
 module "csp_setup" {
-  source = "github.com/valtix-security/terraform-azure-setup"
-  # define the values for all the variables (use values-sample as a reference)
-  prefix = "valtix"
+  source                  = "github.com/valtix-security/terraform-azure-setup"
+  prefix                  = "valtix"
+  subscription_guids_list = []
 }
 
 # provider "valtix" {
 #   api_key_file = file("~/valtix-controller-api-key.json")
 # }
 
-# resource "valtix_cloud_account" "azure1" {
-#   name                  = "azure-sub1"
+# resource "valtix_cloud_account" "azure" {
+#   count                 = length(module.csp_setup.subscription_ids)
+#   name                  = "azure-${module.csp_setup.subscription_ids[count.index]}"
 #   csp_type              = "AZURE"
 #   azure_directory_id    = module.csp_setup.tenant_id
-#   azure_subscription_id = module.csp_setup.subscription_id
+#   azure_subscription_id = module.csp_setup.subscription_ids[count.index]
 #   azure_application_id  = module.csp_setup.app_id
 #   azure_client_secret   = module.csp_setup.secret_key
 #   inventory_monitoring {

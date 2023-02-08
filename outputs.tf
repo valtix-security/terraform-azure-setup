@@ -15,8 +15,8 @@ output "secret_key" {
   sensitive = true
 }
 
-output "subscription_id" {
-  value = data.azurerm_client_config.current.subscription_id
+output "subscription_ids" {
+  value = local.subscription_guids_list
 }
 
 output "iam_role" {

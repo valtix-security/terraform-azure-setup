@@ -1,6 +1,11 @@
+locals {
+  subscription_guids_list = length(var.subscription_guids_list) == 0 ? [data.azurerm_subscription.primary.subscription_id] : var.subscription_guids_list
+  subscription_ids_list     = [for sub in local.subscription_guids_list : "/subscriptions/${sub}"]
+}
+
 resource "azurerm_role_definition" "valtix_controller_role" {
   name        = "${var.prefix}-vtxcontroller-role"
-  scope       = data.azurerm_subscription.primary.id
+  scope       = local.subscription_ids_list[0]
   description = "Custom role name that's assigned to the app for accessing Azure Environment"
 
   permissions {
@@ -23,14 +28,12 @@ resource "azurerm_role_definition" "valtix_controller_role" {
       "Microsoft.Storage/storageAccounts/blobServices/*"
     ]
   }
-
-  assignable_scopes = [
-    data.azurerm_subscription.primary.id
-  ]
+  assignable_scopes = local.subscription_ids_list
 }
 
 resource "azurerm_role_assignment" "valtix_controller_role_assignment" {
-  scope              = data.azurerm_subscription.primary.id
+  count              = length(local.subscription_ids_list)
+  scope              = local.subscription_ids_list[count.index]
   role_definition_id = azurerm_role_definition.valtix_controller_role.role_definition_resource_id
   principal_id       = azuread_service_principal.valtix-controller.object_id
 }

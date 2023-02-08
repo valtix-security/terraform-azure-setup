@@ -1,1 +1,2 @@
 prefix = "valtix"
+subscription_guids_list = []
