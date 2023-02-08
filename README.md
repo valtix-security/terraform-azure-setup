@@ -9,7 +9,7 @@ Create Azure AD App that is used by the Valtix Controller to manage your Azure S
 ## Argument Reference
 
 * `prefix` - (Required) App, Custom role are created with this prefix
-* `subscription_guids_list` - List of subscriptions (Ids) to which IAM role is assigned and prepared to be onboarded onto the Valtix Controller. Default is to use the current active subscription on the current login
+* `subscription_guids_list` - (Optional) List of subscriptions (Ids) to which IAM role is assigned and prepared to be onboarded onto the Valtix Controller. Default is to use the current active subscription on the current login
 
 ## Outputs
 
