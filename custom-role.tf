@@ -25,7 +25,11 @@ resource "azurerm_role_definition" "valtix_controller_role" {
       "Microsoft.Network/virtualNetworks/*",
       "Microsoft.Network/virtualNetworks/subnets/*",
       "Microsoft.Resources/subscriptions/resourcegroups/*",
-      "Microsoft.Storage/storageAccounts/blobServices/*"
+      "Microsoft.Storage/storageAccounts/blobServices/*",
+      "Microsoft.Storage/storageAccounts/listkeys/action",
+      "Microsoft.Network/networkWatchers/*",
+      "Microsoft.Network/applicationSecurityGroups/*",
+      "Microsoft.Compute/diskEncryptionSets/read"
     ]
   }
   assignable_scopes = local.subscription_ids_list
