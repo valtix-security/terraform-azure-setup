@@ -1,15 +1,15 @@
-# terraform-azure-valtix-iam
-Create Azure AD App that is used by the Valtix Controller to manage your Azure Subscription(s). You can clone and use this as a module from your other terraform scripts.
+# terraform-azure-setup
+Create Azure AD App that is used by the Cisco Multicloud Defense Controller to manage your Azure Subscription(s). Create custom IAM role and assign the role to the app on your subscription(s). You can clone and use this as a module from your other terraform scripts.
 
 # Requirements
 1. Enable terraform to access your Azure account. Check here for the options https://registry.terraform.io/providers/hashicorp/azuread/latest/docs and https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
-1. Set the default subscription to work on
-1. Login to the Valtix Dashboard and generate an API Key using the instructions provided here: https://registry.terraform.io/providers/valtix-security/valtix/latest/docs
+1. Set the default subscription
+1. Login to the Cisco Multicloud Defense Dashboard and generate an API Key using the instructions provided here: https://registry.terraform.io/providers/valtix-security/valtix/latest/docs
 
 ## Argument Reference
 
 * `prefix` - (Required) App, Custom role are created with this prefix
-* `subscription_guids_list` - (Optional) List of subscriptions (Ids) to which IAM role is assigned and prepared to be onboarded onto the Valtix Controller. Default is to use the current active subscription on the current login
+* `subscription_guids_list` - (Optional) List of subscriptions (Ids) to which IAM role is assigned and prepared to be onboarded onto the Cisco Multicloud Defense. Default is to use the current active subscription on the current login
 
 ## Outputs
 
@@ -50,9 +50,6 @@ terraform {
     azurerm = {
       source = "hashicorp/azurerm"
     }
-    # valtix = {
-    #   source = "valtix-security/valtix"
-    # }
   }
 }
 
@@ -68,22 +65,21 @@ module "csp_setup" {
   prefix                  = "valtix"
   subscription_guids_list = []
 }
+```
 
-# provider "valtix" {
-#   api_key_file = file("~/valtix-controller-api-key.json")
-# }
+## This is a sample code to onboard the subscriptions onto Cisco Multicloud Defense
 
-# resource "valtix_cloud_account" "azure" {
-#   count                 = length(module.csp_setup.subscription_ids)
-#   name                  = "azure-${module.csp_setup.subscription_ids[count.index]}"
-#   csp_type              = "AZURE"
-#   azure_directory_id    = module.csp_setup.tenant_id
-#   azure_subscription_id = module.csp_setup.subscription_ids[count.index]
-#   azure_application_id  = module.csp_setup.app_id
-#   azure_client_secret   = module.csp_setup.secret_key
-#   inventory_monitoring {
-#     regions = ["us-east1", "us-west1"]
-#   }
-# }
-
+```hcl
+resource "valtix_cloud_account" "azure" {
+  count                 = length(module.csp_setup.subscription_ids)
+  name                  = "azure-${module.csp_setup.subscription_ids[count.index]}"
+  csp_type              = "AZURE"
+  azure_directory_id    = module.csp_setup.tenant_id
+  azure_subscription_id = module.csp_setup.subscription_ids[count.index]
+  azure_application_id  = module.csp_setup.app_id
+  azure_client_secret   = module.csp_setup.secret_key
+  inventory_monitoring {
+    regions = ["us-east1", "us-west1"]
+  }
+}
 ```
