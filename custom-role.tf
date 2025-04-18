@@ -18,6 +18,8 @@ resource "azurerm_role_definition" "valtix_controller_role" {
       "Microsoft.ManagedIdentity/userAssignedIdentities/read",
       "Microsoft.ManagedIdentity/userAssignedIdentities/assign/action",
       "Microsoft.Network/loadBalancers/*",
+      "Microsoft.Network/locations/serviceTagDetails/read",
+      "Microsoft.Network/locations/serviceTags/read",
       "Microsoft.Network/natGateways/*",
       "Microsoft.Network/networkinterfaces/*",
       "Microsoft.Network/networkSecurityGroups/*",
