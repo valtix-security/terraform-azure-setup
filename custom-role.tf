@@ -18,8 +18,6 @@ resource "azurerm_role_definition" "valtix_controller_role" {
       "Microsoft.ManagedIdentity/userAssignedIdentities/read",
       "Microsoft.ManagedIdentity/userAssignedIdentities/assign/action",
       "Microsoft.Network/loadBalancers/*",
-      "Microsoft.Network/locations/serviceTagDetails/read",
-      "Microsoft.Network/locations/serviceTags/read",
       "Microsoft.Network/natGateways/*",
       "Microsoft.Network/networkinterfaces/*",
       "Microsoft.Network/networkSecurityGroups/*",
@@ -33,7 +31,16 @@ resource "azurerm_role_definition" "valtix_controller_role" {
       "Microsoft.Network/networkWatchers/*",
       "Microsoft.Network/applicationSecurityGroups/*",
       "Microsoft.Compute/diskEncryptionSets/read",
-      "Microsoft.Insights/Metrics/Read"
+      "Microsoft.Insights/Metrics/Read",
+      "Microsoft.Network/locations/serviceTagDetails/read",
+      "Microsoft.Network/locations/serviceTags/read",
+      "Microsoft.CognitiveServices/*/read",
+      "Microsoft.CognitiveServices/accounts/listkeys/action",
+      "Microsoft.Network/virtualHubs/*",
+      "Microsoft.Network/virtualHubs/hubRouteTables/*",
+      "Microsoft.MarketplaceOrdering/offertypes/publishers/offers/plans/agreements/*",
+      "Microsoft.Authorization/roleAssignments/read",
+      "Microsoft.Authorization/roleDefinitions/read"
     ]
   }
   assignable_scopes = local.subscription_ids_list
